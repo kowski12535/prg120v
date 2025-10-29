@@ -43,43 +43,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Legg til klasse</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 2rem auto; }
-        form { display: grid; gap: 1rem; }
-        label { display: grid; gap: 0.3rem; }
-        input { padding: 0.4rem; font-size: 1rem; }
-        button { padding: 0.5rem 1rem; font-size: 1rem; }
-        .notice { margin-bottom: 1rem; padding: 0.75rem; border-radius: 4px; }
-        .error { background-color: #f4cccc; border: 1px solid #e06666; }
-        nav a { margin-right: 1rem; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav>
-        <a href="index.php">Tilbake til menyen</a>
-        <a href="classes.php">Vis klasser</a>
-    </nav>
+    <div class="page">
+        <nav>
+            <a href="index.php">Tilbake til menyen</a>
+            <a href="classes.php">Vis klasser</a>
+        </nav>
 
-    <h1>Legg til klasse</h1>
+        <div class="card">
+            <h1>Legg til klasse</h1>
 
-    <?php if ($error !== ''): ?>
-        <p class="notice error"><?= htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></p>
-    <?php endif; ?>
+            <?php if ($error !== ''): ?>
+                <p class="notice error"><?= htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></p>
+            <?php endif; ?>
 
-    <form method="post">
-        <label>
-            Klassekode
-            <input name="klassekode" maxlength="10" value="<?= htmlspecialchars($values['klassekode'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" required>
-        </label>
-        <label>
-            Klassenavn
-            <input name="klassenavn" maxlength="100" value="<?= htmlspecialchars($values['klassenavn'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" required>
-        </label>
-        <label>
-            Studiumkode
-            <input name="studiumkode" maxlength="10" value="<?= htmlspecialchars($values['studiumkode'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" required>
-        </label>
-        <button type="submit">Lagre klasse</button>
-    </form>
+            <form method="post" class="form-grid">
+                <label>
+                    Klassekode
+                    <input name="klassekode" maxlength="10" value="<?= htmlspecialchars($values['klassekode'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" required>
+                </label>
+                <label>
+                    Klassenavn
+                    <input name="klassenavn" maxlength="100" value="<?= htmlspecialchars($values['klassenavn'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" required>
+                </label>
+                <label>
+                    Studiumkode
+                    <input name="studiumkode" maxlength="10" value="<?= htmlspecialchars($values['studiumkode'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" required>
+                </label>
+                <button type="submit">Lagre klasse</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

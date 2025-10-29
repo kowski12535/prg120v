@@ -1,52 +1,3 @@
-<?php
-declare(strict_types=1);
-
-require_once __DIR__ . '/config.php';
-
-$pdo = getPDO();
-
-$classes = $pdo->query(
-    'SELECT klassekode, klassenavn FROM KLASSE ORDER BY klassekode',
-)->fetchAll();
-
-$error = '';
-$values = [
-    'brukernavn' => '',
-    'fornavn' => '',
-    'etternavn' => '',
-    'klassekode' => '',
-];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $values['brukernavn'] = strtolower(trim($_POST['brukernavn'] ?? ''));
-    $values['fornavn'] = trim($_POST['fornavn'] ?? '');
-    $values['etternavn'] = trim($_POST['etternavn'] ?? '');
-    $values['klassekode'] = trim($_POST['klassekode'] ?? '');
-
-    if ($values['brukernavn'] === '' || $values['fornavn'] === '' || $values['etternavn'] === '' || $values['klassekode'] === '') {
-        $error = 'Fyll ut alle feltene.';
-    } elseif (!in_array($values['klassekode'], array_column($classes, 'klassekode'), true)) {
-        $error = 'Velg en gyldig klasse.';
-    } else {
-        try {
-            $statement = $pdo->prepare(
-                'INSERT INTO STUDENT (brukernavn, fornavn, etternavn, klassekode) VALUES (:brukernavn, :fornavn, :etternavn, :klassekode)',
-            );
-            $statement->execute([
-                'brukernavn' => $values['brukernavn'],
-                'fornavn' => $values['fornavn'],
-                'etternavn' => $values['etternavn'],
-                'klassekode' => $values['klassekode'],
-            ]);
-
-            header('Location: students.php?message=' . urlencode('Ny student ble lagt til.'));
-            exit;
-        } catch (PDOException $pdoException) {
-            $error = 'Kunne ikke lagre studenten. Sjekk om brukernavnet er unikt.';
-        }
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="nb">
 <head>
@@ -71,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if (count($classes) === 0): ?>
                 <p>Du må registrere minst én klasse før du kan legge til studenter.</p>
             <?php else: ?>
-                <form method="post" class="form-grid">
+                <form method="post">
                     <label>
                         Brukernavn
                         <input name="brukernavn" maxlength="20" value="<?= htmlspecialchars($values['brukernavn'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" required>

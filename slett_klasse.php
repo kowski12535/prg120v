@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $studentCount = (int) ($studentCountStatement->fetch()['total'] ?? 0);
 
             if ($studentCount > 0) {
-                $error = 'Kan ikke slette klassen fordi den har registrerte studenter.';
+                $error = 'Du kan ikke slette klassen, slett studentene først.';
             } else {
                 try {
                     $deleteStatement = $pdo->prepare('DELETE FROM KLASSE WHERE klassekode = :klassekode');

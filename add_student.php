@@ -30,8 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $duplicateCheck = $pdo->prepare('SELECT COUNT(*) AS total FROM STUDENT WHERE brukernavn = :brukernavn');
         $duplicateCheck->execute(['brukernavn' => $values['brukernavn']]);
+        $duplicateRow = $duplicateCheck->fetch();
+        $duplicateTotal = 0;
 
-        if ((int) ($duplicateCheck->fetch()['total'] ?? 0) > 0) {
+        if (is_array($duplicateRow)) {
+            $duplicateTotal = (int) ($duplicateRow['total'] ?? 0);
+        }
+
+        if ($duplicateTotal > 0) {
             $error = 'Brukernavnet er allerede i bruk.';
         } else {
             try {

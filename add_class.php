@@ -23,8 +23,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $duplicateCheck = $pdo->prepare('SELECT COUNT(*) AS total FROM KLASSE WHERE klassekode = :klassekode');
         $duplicateCheck->execute(['klassekode' => $values['klassekode']]);
         $existing = $duplicateCheck->fetch();
+        $duplicateTotal = 0;
 
-        if (($existing['total'] ?? 0) > 0) {
+        if (is_array($existing)) {
+            $duplicateTotal = (int) ($existing['total'] ?? 0);
+        }
+
+        if ($duplicateTotal > 0) {
             $error = 'Klassekoden finnes allerede. Velg en annen kode.';
         } else {
             try {

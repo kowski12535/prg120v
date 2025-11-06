@@ -16,8 +16,10 @@ declare(strict_types=1);
             <ul class="menu">
                 <li><a href="classes.php">Vis klasser</a></li>
                 <li><a href="add_class.php">Legg til klasse</a></li>
+                <li><a href="slett_klasse.php">Slett klasse</a></li>
                 <li><a href="students.php">Vis studenter</a></li>
                 <li><a href="add_student.php">Legg til student</a></li>
+                <li><a href="slett_student.php">Slett student</a></li>
             </ul>
         </div>
     </div>

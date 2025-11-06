@@ -58,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <nav>
             <a href="index.php">Tilbake til menyen</a>
             <a href="classes.php">Vis klasser</a>
+            <a href="slett_klasse.php">Slett klasse</a>
         </nav>
 
         <div class="card">

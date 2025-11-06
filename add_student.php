@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <nav>
             <a href="index.php">Tilbake til menyen</a>
             <a href="students.php">Vis studenter</a>
+            <a href="slett_student.php">Slett student</a>
         </nav>
 
         <div class="card">

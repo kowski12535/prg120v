@@ -49,6 +49,7 @@ $students = $pdo->query(
         <nav>
             <a href="index.php">Tilbake til menyen</a>
             <a href="add_student.php">Legg til ny student</a>
+            <a href="slett_student.php">Slett student</a>
         </nav>
 
         <div class="card">

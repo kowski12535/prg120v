@@ -58,6 +58,7 @@ $classes = $pdo->query(
         <nav>
             <a href="index.php">Tilbake til menyen</a>
             <a href="add_class.php">Legg til ny klasse</a>
+            <a href="slett_klasse.php">Slett klasse</a>
         </nav>
 
         <div class="card">

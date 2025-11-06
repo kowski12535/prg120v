@@ -14,18 +14,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     if ($klassekode === '') {
         $error = 'Fant ikke klassekode å slette.';
     } else {
-        try {
-            $statement = $pdo->prepare('DELETE FROM KLASSE WHERE klassekode = :klassekode');
-            $statement->execute(['klassekode' => $klassekode]);
+        $studentCountStatement = $pdo->prepare('SELECT COUNT(*) AS total FROM STUDENT WHERE klassekode = :klassekode');
+        $studentCountStatement->execute(['klassekode' => $klassekode]);
+        $studentCount = (int) ($studentCountStatement->fetch()['total'] ?? 0);
 
-            if ($statement->rowCount() === 0) {
-                $error = 'Klassen eksisterer ikke.';
-            } else {
-                header('Location: classes.php?message=' . urlencode('Klassen ble slettet.'));
-                exit;
+        if ($studentCount > 0) {
+            $error = 'Kan ikke slette klassen fordi den har registrerte studenter.';
+        } else {
+            try {
+                $statement = $pdo->prepare('DELETE FROM KLASSE WHERE klassekode = :klassekode');
+                $statement->execute(['klassekode' => $klassekode]);
+
+                if ($statement->rowCount() === 0) {
+                    $error = 'Klassen eksisterer ikke.';
+                } else {
+                    header('Location: classes.php?message=' . urlencode('Klassen ble slettet.'));
+                    exit;
+                }
+            } catch (PDOException $pdoException) {
+                $error = 'Kunne ikke slette klassen. Prøv igjen senere.';
             }
-        } catch (PDOException $pdoException) {
-            $error = 'Kunne ikke slette klassen. Har den registrerte studenter?';
         }
     }
 }

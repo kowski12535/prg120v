@@ -20,20 +20,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($values['klassekode'] === '' || $values['klassenavn'] === '' || $values['studiumkode'] === '') {
         $error = 'Fyll ut alle feltene.';
     } else {
-        try {
-            $statement = $pdo->prepare(
-                'INSERT INTO KLASSE (klassekode, klassenavn, studiumkode) VALUES (:klassekode, :klassenavn, :studiumkode)',
-            );
-            $statement->execute([
-                'klassekode' => $values['klassekode'],
-                'klassenavn' => $values['klassenavn'],
-                'studiumkode' => $values['studiumkode'],
-            ]);
+        $duplicateCheck = $pdo->prepare('SELECT COUNT(*) AS total FROM KLASSE WHERE klassekode = :klassekode');
+        $duplicateCheck->execute(['klassekode' => $values['klassekode']]);
+        $existing = $duplicateCheck->fetch();
 
-            header('Location: classes.php?message=' . urlencode('Ny klasse ble lagt til.'));
-            exit;
-        } catch (PDOException $pdoException) {
-            $error = 'Kunne ikke lagre klassen. Sjekk om klassekoden er unik.';
+        if (($existing['total'] ?? 0) > 0) {
+            $error = 'Klassekoden finnes allerede. Velg en annen kode.';
+        } else {
+            try {
+                $statement = $pdo->prepare(
+                    'INSERT INTO KLASSE (klassekode, klassenavn, studiumkode) VALUES (:klassekode, :klassenavn, :studiumkode)',
+                );
+                $statement->execute([
+                    'klassekode' => $values['klassekode'],
+                    'klassenavn' => $values['klassenavn'],
+                    'studiumkode' => $values['studiumkode'],
+                ]);
+
+                header('Location: classes.php?message=' . urlencode('Ny klasse ble lagt til.'));
+                exit;
+            } catch (PDOException $pdoException) {
+                $error = 'Kunne ikke lagre klassen. Prøv igjen senere.';
+            }
         }
     }
 }

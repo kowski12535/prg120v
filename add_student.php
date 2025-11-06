@@ -28,21 +28,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!in_array($values['klassekode'], array_column($classes, 'klassekode'), true)) {
         $error = 'Velg en gyldig klasse.';
     } else {
-        try {
-            $statement = $pdo->prepare(
-                'INSERT INTO STUDENT (brukernavn, fornavn, etternavn, klassekode) VALUES (:brukernavn, :fornavn, :etternavn, :klassekode)',
-            );
-            $statement->execute([
-                'brukernavn' => $values['brukernavn'],
-                'fornavn' => $values['fornavn'],
-                'etternavn' => $values['etternavn'],
-                'klassekode' => $values['klassekode'],
-            ]);
+        $duplicateCheck = $pdo->prepare('SELECT COUNT(*) AS total FROM STUDENT WHERE brukernavn = :brukernavn');
+        $duplicateCheck->execute(['brukernavn' => $values['brukernavn']]);
 
-            header('Location: students.php?message=' . urlencode('Ny student ble lagt til.'));
-            exit;
-        } catch (PDOException $pdoException) {
-            $error = 'Kunne ikke lagre studenten. Sjekk om brukernavnet er unikt.';
+        if ((int) ($duplicateCheck->fetch()['total'] ?? 0) > 0) {
+            $error = 'Brukernavnet er allerede i bruk.';
+        } else {
+            try {
+                $statement = $pdo->prepare(
+                    'INSERT INTO STUDENT (brukernavn, fornavn, etternavn, klassekode) VALUES (:brukernavn, :fornavn, :etternavn, :klassekode)',
+                );
+                $statement->execute([
+                    'brukernavn' => $values['brukernavn'],
+                    'fornavn' => $values['fornavn'],
+                    'etternavn' => $values['etternavn'],
+                    'klassekode' => $values['klassekode'],
+                ]);
+
+                header('Location: students.php?message=' . urlencode('Ny student ble lagt til.'));
+                exit;
+            } catch (PDOException $pdoException) {
+                $error = 'Kunne ikke lagre studenten. Prøv igjen senere.';
+            }
         }
     }
 }

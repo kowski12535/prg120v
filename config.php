@@ -124,6 +124,15 @@ if (!class_exists('PDO')) {
             }
 
             $this->rowCount = $this->statement->affected_rows;
+            if ($this->statement->field_count > 0) {
+                $result = $this->statement->get_result();
+                if ($result === false) {
+                    throw new PDOException('Failed to fetch statement result: ' . $this->statement->error);
+                }
+                $this->result = $result;
+            } else {
+                $this->result = null;
+            }
             return true;
         }
 
@@ -141,19 +150,57 @@ if (!class_exists('PDO')) {
 
         public function fetchAll(?int $mode = null): array
         {
-            if (!$this->result instanceof mysqli_result) {
+            $result = $this->ensureResult();
+            if (!$result instanceof mysqli_result) {
                 return [];
             }
 
             $mode = $mode ?? $this->defaultFetchMode;
             $type = $mode === PDO::FETCH_ASSOC ? MYSQLI_ASSOC : MYSQLI_NUM;
 
-            return $this->result->fetch_all($type);
+            return $result->fetch_all($type);
+        }
+
+        public function fetch(?int $mode = null)
+        {
+            $result = $this->ensureResult();
+            if (!$result instanceof mysqli_result) {
+                return false;
+            }
+
+            $mode = $mode ?? $this->defaultFetchMode;
+            $type = $mode === PDO::FETCH_ASSOC ? MYSQLI_ASSOC : MYSQLI_NUM;
+
+            $row = $result->fetch_array($type);
+
+            if ($row === null) {
+                return false;
+            }
+
+            return $row;
         }
 
         public function rowCount(): int
         {
             return $this->rowCount;
+        }
+
+        private function ensureResult(): ?mysqli_result
+        {
+            if ($this->result instanceof mysqli_result) {
+                return $this->result;
+            }
+
+            if ($this->statement instanceof mysqli_stmt && $this->statement->field_count > 0) {
+                $result = $this->statement->get_result();
+                if ($result === false) {
+                    throw new PDOException('Failed to fetch statement result: ' . $this->statement->error);
+                }
+                $this->result = $result;
+                return $result;
+            }
+
+            return null;
         }
     }
 
